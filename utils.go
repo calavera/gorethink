@@ -2,8 +2,6 @@ package gorethink
 
 import (
 	"reflect"
-	"strconv"
-	"strings"
 	"sync/atomic"
 
 	"gopkg.in/gorethink/gorethink.v2/encoding"
@@ -237,22 +235,6 @@ func optArgsToStringSlice(optArgs termsObj) []string {
 	}
 
 	return allArgs
-}
-
-func splitAddress(address string) (hostname string, port int) {
-	hostname = "localhost"
-	port = 28015
-
-	addrParts := strings.Split(address, ":")
-
-	if len(addrParts) >= 1 {
-		hostname = addrParts[0]
-	}
-	if len(addrParts) >= 2 {
-		port, _ = strconv.Atoi(addrParts[1])
-	}
-
-	return
 }
 
 func encode(data interface{}) (interface{}, error) {

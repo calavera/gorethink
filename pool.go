@@ -39,7 +39,7 @@ func NewPool(host Host, opts *ConnectOpts) (*Pool, error) {
 	}
 
 	p, err := pool.NewChannelPool(initialCap, maxOpen, func() (net.Conn, error) {
-		conn, err := NewConnection(host.String(), opts)
+		conn, err := NewConnection(string(host), opts)
 		if err != nil {
 			return nil, err
 		}

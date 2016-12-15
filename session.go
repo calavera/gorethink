@@ -133,8 +133,7 @@ func Connect(opts ConnectOpts) (*Session, error) {
 
 	hosts := make([]Host, len(addresses))
 	for i, address := range addresses {
-		hostname, port := splitAddress(address)
-		hosts[i] = NewHost(hostname, port)
+		hosts[i] = Host(address)
 	}
 	if len(hosts) <= 0 {
 		return nil, ErrNoHosts

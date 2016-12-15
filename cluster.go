@@ -234,7 +234,7 @@ func (c *Cluster) listenForNodeChanges() error {
 
 						Log.WithFields(logrus.Fields{
 							"id":   node.ID,
-							"host": node.Host.String(),
+							"host": string(node.Host),
 						}).Debug("Connected to node")
 					}
 				}
@@ -260,7 +260,7 @@ func (c *Cluster) connectNodes(hosts []Host) error {
 
 	// Attempt to connect to each seed host
 	for _, host := range hosts {
-		conn, err := NewConnection(host.String(), c.opts)
+		conn, err := NewConnection(string(host), c.opts)
 		if err != nil {
 			attemptErr = err
 			Log.Warnf("Error creating connection: %s", err.Error())
@@ -299,7 +299,7 @@ func (c *Cluster) connectNodes(hosts []Host) error {
 					if _, ok := nodeSet[node.ID]; !ok {
 						Log.WithFields(logrus.Fields{
 							"id":   node.ID,
-							"host": node.Host.String(),
+							"host": string(node.Host),
 						}).Debug("Connected to node")
 						nodeSet[node.ID] = node
 					}
@@ -321,7 +321,7 @@ func (c *Cluster) connectNodes(hosts []Host) error {
 				if _, ok := nodeSet[node.ID]; !ok {
 					Log.WithFields(logrus.Fields{
 						"id":   node.ID,
-						"host": node.Host.String(),
+						"host": string(node.Host),
 					}).Debug("Connected to node")
 
 					nodeSet[node.ID] = node
@@ -352,7 +352,8 @@ func (c *Cluster) connectNodes(hosts []Host) error {
 func (c *Cluster) connectNodeWithStatus(s nodeStatus) (*Node, error) {
 	aliases := make([]Host, len(s.Network.CanonicalAddresses))
 	for i, aliasAddress := range s.Network.CanonicalAddresses {
-		aliases[i] = NewHost(aliasAddress.Host, int(s.Network.ReqlPort))
+		addr := fmt.Sprintf("%s:%d", aliasAddress.Host, s.Network.ReqlPort)
+		aliases[i] = Host(addr)
 	}
 
 	return c.connectNode(s.ID, aliases)
@@ -473,7 +474,7 @@ func (c *Cluster) setNodes(nodes []*Node) {
 	nodesMap := make(map[string]*Node, len(nodes))
 	hosts := make([]string, len(nodes))
 	for i, node := range nodes {
-		host := node.Host.String()
+		host := string(node.Host)
 
 		nodesMap[host] = node
 		hosts[i] = host
